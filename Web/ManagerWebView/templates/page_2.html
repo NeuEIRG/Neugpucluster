@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/jQuery.form.js"></script>
+    <script src="/static/js/page_2.js"></script>
+
+    <style type="text/css">
+        .upload_files{
+            position:absolute;
+            left:469px;
+            top:70px;
+        }
+        .oneselect{
+            position:absolute;
+            left:550px;
+            top:120px;
+        }
+        .resultDisplay{
+
+        }
+    </style>
+</head>
+<body id="bd">
+
+    <div class="upload_files" id="upload_files">
+        <form target="submitFrame" id="upload_search_form" enctype="multipart/form-data" action="/search_file" method="post">  
+            {% csrf_token %}
+            <input type="file" name="myfile" />  
+            <input type="submit" value="开始检索" />  
+        </form>  
+    </div>
+
+    <iframe  id="submitFrame" style="display: none;width:0; height:0" name="submitFrame"  src="about:blank"></iframe>
+
+    <div class="oneselect" id="oneselect">
+            <input type="radio" value="Submit" />
+            <label for="female">相似度</label>
+            &nbsp;
+            <input type="radio" value="Submit" />
+            <label for="female">TopK</label>
+    </div>
+
+    <div id="uploadDisplay">
+        
+    </div>
+
+
+    <div class="resultDisplay" id="resultDisplay">
+
+    </div>
+</body>
+</html>

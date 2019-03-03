@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/jQuery.form.js"></script>
+    <script src="/static/js/page_3.js"></script>
+
+    <style type="text/css">
+        .div_1{
+            position:absolute;
+            left:459px;
+            top:70px;
+        }
+
+        /* .div_2{
+            position:absolute;
+            left:10px;
+            top:200px;
+        } */
+
+        .div_3{
+
+        }
+    </style>
+</head>
+<body>
+
+    <div class="div_1">
+        <form id="upload_search_form" target="submitFrame" enctype="multipart/form-data" action="/recognize" method="post">
+            {% csrf_token %}  
+            <input type="file" name="myfile" />  
+            <input type="submit" value="开始识别"/>
+        </form>  
+    </div>
+
+    <iframe  id="submitFrame" style="display: none;width:0; height:0" name="submitFrame"  src="about:blank"></iframe>
+
+    <!-- <div class="div_2">
+        <input type="radio" value="Submit" />
+        <label for="female">KNN</label>
+    </div> -->
+
+    <div class="div_3" id="uploadDisplay">
+
+    </div>
+
+    <div class="div_3" id="resultDisplay">
+
+    </div>
+
+</body>
+</html>

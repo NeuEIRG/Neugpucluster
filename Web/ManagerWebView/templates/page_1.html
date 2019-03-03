@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/jQuery.form.js"></script>
+    <script src="/static/js/page_1.js"></script>
+
+    <style type="text/css">
+        .div_1{
+            position:absolute;
+            left:240px;
+            top:70px;
+        }
+
+        .div_2{
+            position:absolute;
+            left:10px;
+            top:200px;
+        }
+
+        .div_3{
+
+        }
+
+    </style>
+</head>
+<body id="bd" onload="load_function()">
+
+    <div id="upload_files" class="div_1">
+        <form id="upload_search_form" target="submitFrame" enctype="multipart/form-data" action="/upload_file" method="post">  
+            {% csrf_token %}
+            类别:<input id="input_class" type="text" name="class_name" />
+            <input type="file" name="myfile" />  
+            <br/>  
+            <input type="submit"  value="upload" style="position:absolute;left:110px;top:30px;"/> 
+        </form>  
+    </div>
+    
+    <iframe  id="submitFrame" style="display: none;width:0; height:0" name="submitFrame"  src="about:blank"></iframe>
+
+    <div id="tab" class="div_2" style="cursor:pointer;">
+        <ul id="table">
+        </ul>
+    </div>
+
+    <div id="displayfiles" class="div_3">
+        <!-- <img src="/static/images/bird/1.jpg" >
+        <img src="/static/images/bird/2.jpg" >
+        <img src="/static/images/bird/3.jpg" >
+        <img src="/static/images/bird/4.jpg" > -->
+    </div>
+
+
+</body>
+</html>
