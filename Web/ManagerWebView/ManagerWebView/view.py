@@ -78,7 +78,14 @@ def upload_network(request):
 
 def upload_train_options(request):
 	if request.POST:
-		
+		dataset_name = request.POST['dataset_name']
+		model_name = request.POST['model_name']
+		learning_rate = request.POST['learning_rate']
+		batch_size = request.POST['batch_size']
+		# print(dataset_name)
+		# print(model_name)
+		# print(learning_rate)
+		# print(batch_size)
 		return HttpResponse("over")
 	else:
 		return HttpResponse("fail")

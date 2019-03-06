@@ -4,12 +4,12 @@
 
 <script src="/static/js/jquery.js"></script>
 <script src="/static/js/jQuery.form.js"></script>
-<script src="/static/js/createDataSet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
 <script src="/static/js/util.js"></script>
+<script src="/static/js/train.js"></script>
 
 <meta charset="UTF-8">
 
@@ -79,19 +79,19 @@ canvas{
     <div id="upload_files" class="div_1" style="left:12px;position: absolute;">
         <form id="upload_search_form" target="submitFrame" enctype="multipart/form-data" action="/upload_train_options" method="post">  
             {% csrf_token %}
-             DataSet Name:&nbsp;&nbsp;<input id="input_dataset_name" type="text" name="dataset_name" autocomplete="off"/>
+             DataSet Name:<input style="position: absolute;left: 100px;" id="input_dataset_name" type="text" name="dataset_name" autocomplete="off"/>
             <br/><br/> 
-             Class Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="input_class_name" type="text" name="class_name" autocomplete="off"/>
+             Model Name:<input style="position: absolute;left: 100px;" id="input_model_name" type="text" name="model_name" autocomplete="off"/>
              <br/><br/> 
-             Learning Rate:&nbsp;&nbsp;<input id="input_learning_rate" type="text" name="class_name" autocomplete="off"/>
+             Learning Rate:<input style="position: absolute;left: 100px;" id="input_learning_rate" type="text" name="learning_rate" autocomplete="off"/>
              <br/><br/> 
-             Batch Size:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="input_batch_size" type="text" name="class_name" autocomplete="off"/>
+             Batch Size:<input style="position: absolute;left: 100px;" id="input_batch_size" type="text" name="batch_size" autocomplete="off"/>
            </br><br/> 
             <div style="left:150px; position:absolute;">
                 <div style="width:50%;padding:0;margin:0;float:left;box-sizing:border-box;">
  <!--                  <input type="file" name="myfile" />  -->
                   <div style=" height:0px; overflow:hidden; position:absolute;">
-                    <input type="file"  multiple="multiple" id="up" name="upload_images"/></div>
+                    <input type="submit" id="up"/></div>
                     <button onclick="document.getElementById('up').click();">Train</button>
                   </div>   
 
