@@ -1,4 +1,5 @@
 var global_cur_layer_object
+var global_layer_count = 0
 // <tr id="image_height">
 //   <td>image height:</td>
 //   <td>
@@ -108,13 +109,13 @@ function create_DataLayer(image_height,image_width,image_channel) {
 	button_node[0].onclick = function() {
 		modifyExistingLayer(this);
 	};
+	button_node[0].id = "MiddleLayer" + global_layer_count.toString()
+	global_layer_count++
 	var tr_node = document.createElement("tr")
 	var td_node =document.createElement("td")
-	console.log(node.id)
-	console.log(node.onclick)
 	td_node.appendChild(node)
 	tr_node.appendChild(td_node)
-	table_node.appendChild(node)
+	table_node.appendChild(tr_node)
 }
 
 function create_ConvolutionLayer(output_channel,kernel_size,padding,stride) {
@@ -128,11 +129,13 @@ function create_ConvolutionLayer(output_channel,kernel_size,padding,stride) {
 	button_node[0].onclick = function() {
 		modifyExistingLayer(this);
 	};
+	button_node[0].id = "MiddleLayer" + global_layer_count.toString()
+	global_layer_count++
 	var tr_node = document.createElement("tr")
 	var td_node =document.createElement("td")
 	td_node.appendChild(node)
 	tr_node.appendChild(td_node)
-	table_node.appendChild(node)
+	table_node.appendChild(tr_node)
 }
 
 
@@ -147,11 +150,13 @@ function create_FCLayer(output_channel) {
 	button_node[0].onclick = function() {
 		modifyExistingLayer(this);
 	};
+	button_node[0].id = "MiddleLayer" + global_layer_count.toString()
+	global_layer_count++
 	var tr_node = document.createElement("tr")
 	var td_node =document.createElement("td")
 	td_node.appendChild(node)
 	tr_node.appendChild(td_node)
-	table_node.appendChild(node)
+	table_node.appendChild(tr_node)
 }
 
 function create_PoolingLayer(pooling_type,kernel_size,stride,padding) {
@@ -165,11 +170,13 @@ function create_PoolingLayer(pooling_type,kernel_size,stride,padding) {
 	button_node[0].onclick = function() {
 		modifyExistingLayer(this);
 	};
+	button_node[0].id = "MiddleLayer" + global_layer_count.toString()
+	global_layer_count++
 	var tr_node = document.createElement("tr")
 	var td_node =document.createElement("td")
 	td_node.appendChild(node)
 	tr_node.appendChild(td_node)
-	table_node.appendChild(node)
+	table_node.appendChild(tr_node)
 }
 
 function create_BatchNormLayer() {
@@ -183,11 +190,13 @@ function create_BatchNormLayer() {
 	button_node[0].onclick = function() {
 		modifyExistingLayer(this);
 	};
+	button_node[0].id = "MiddleLayer" + global_layer_count.toString()
+	global_layer_count++
 	var tr_node = document.createElement("tr")
 	var td_node =document.createElement("td")
 	td_node.appendChild(node)
 	tr_node.appendChild(td_node)
-	table_node.appendChild(node)
+	table_node.appendChild(tr_node)
 }
 
 function create_ReluLayer() {
@@ -201,11 +210,13 @@ function create_ReluLayer() {
 	button_node[0].onclick = function() {
 		modifyExistingLayer(this);
 	};
+	button_node[0].id = "MiddleLayer" + global_layer_count.toString()
+	global_layer_count++
 	var tr_node = document.createElement("tr")
 	var td_node =document.createElement("td")
 	td_node.appendChild(node)
 	tr_node.appendChild(td_node)
-	table_node.appendChild(node)
+	table_node.appendChild(tr_node)
 }
 
 // <tr id="newLayerHolder">
@@ -422,17 +433,57 @@ function modifyExistingLayer(element) {
 
 
 function submitNetwork() {
-	var table_node  = document.getElementById("NetworkDisplayer")
-	layer_collection = table_node.childNodes
-	for(var i=0;i<layer_collection.length;i++) {
-		var tr_node = layer_collection[i]
-		console.log(tr_node.nodeName)
-		// var td_node = tr_node.childNodes[0] 
-		// var div_node = td_node.childNodes[0]
-		// var button_node = div_node.getElementsByTagName("button")
-		// var value = button_node[0].innerHTML
-		// if((value!="Begin")&&(value!="End")) {
-		// 	console.log(value)
-		// }
+	var json = {}
+	json.layer = []
+	for(var i=0;i<global_layer_count;i++) {
+		var layer_id = "MiddleLayer" + i.toString()
+		layer_obj = document.getElementById(layer_id)
+		global_cur_layer_object = layer_obj
+		// console.log(layer_obj.innerHTML)
+		var value = (layer_obj.innerHTML.split("/"))[0]
+		if(value=="DataLayer") {
+			var param = Parse_DataLayer()
+			data_layer = {}
+			data_layer.layer_type = "DataLayer"
+			data_layer.image_height = param[0]
+			data_layer.image_width = param[1]
+			data_layer.image_channel = param[2]
+			json.layer.push(data_layer)
+		} else if(value=="ConvolutionLayer") {
+			var param = Parse_ConvolutionLayer()
+			conv_layer = {}
+			conv_layer.layer_type = "ConvolutionLayer"
+			conv_layer.output_channel = param[0]
+			conv_layer.kernel_size = param[1]
+			conv_layer.padding = param[2]
+			conv_layer.stride = param[3]
+			json.layer.push(conv_layer)
+		} else if(value=="FCLayer") {
+			var param = Parse_FCLayer()
+			fc_layer = {}
+			fc_layer.layer_type = "FCLayer"
+			fc_layer.output_channel = param
+			json.layer.push(fc_layer)
+		} else if(value=="PoolingLayer") {
+			var param = Parse_PoolingLayer()
+			pooling_layer = {}
+			pooling_layer.layer_type = "PoolingLayer"
+			pooling_layer.kernel_size = param[0]
+			pooling_layer.pooling_type = param[1]
+			pooling_type.padding = param[2]
+			pooling_type.stride = param[3]
+			json.layer.push(pooling_layer)
+		} else if(value=="ReluLayer") {
+			relu_layer = {}
+			relu_layer.layer_type = "ReluLayer"
+			json.layer.push(relu_layer)
+		} else if(value=="BatchNormLayer") {
+			batch_norm_layer = {}
+			batch_norm_layer.layer_type = "BatchNormLayer"
+			json.layer.push(batch_norm_layer)
+		}
 	}
+
+	var jsonStr = JSON.stringify(json);
+	console.log(jsonStr)
 }
