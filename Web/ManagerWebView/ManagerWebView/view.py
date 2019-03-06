@@ -3,6 +3,9 @@ from django.shortcuts import render
 import json
 import os
 import sys
+from django.views.decorators.csrf import csrf_exempt
+import simplejson
+  
 
 def hello(request):
     return render(request,'index.html')
@@ -56,3 +59,12 @@ def upload_file(request):
 		json_results['class_name'] = class_dict
 		json_results['dataset_name'] = dataset_name
 		return HttpResponse(json.dumps(json_results), content_type='application/json')
+
+@csrf_exempt
+def upload_network(request):
+	if request.POST:
+		json_data = simplejson.loads(request.body)
+		print(json_data)
+		return HttpResponse("over")
+	else:
+		return HttpResponse("fail")

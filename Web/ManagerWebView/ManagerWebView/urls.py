@@ -29,4 +29,5 @@ urlpatterns = [
     url(r'createDataSet$',view.createDataSet),
     url(r'upload_file$',view.upload_file),
     url(r'createNetwork$',view.createNetwork),
+    url(r'upload_network$',view.upload_network),
 ]

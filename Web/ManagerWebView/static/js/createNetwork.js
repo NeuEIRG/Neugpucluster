@@ -435,6 +435,7 @@ function modifyExistingLayer(element) {
 function submitNetwork() {
 	var json = {}
 	json.layer = []
+	json.network = document.getElementById("ModelNameInputer").value
 	for(var i=0;i<global_layer_count;i++) {
 		var layer_id = "MiddleLayer" + i.toString()
 		layer_obj = document.getElementById(layer_id)
@@ -485,5 +486,16 @@ function submitNetwork() {
 	}
 
 	var jsonStr = JSON.stringify(json);
-	console.log(jsonStr)
+	// console.log(jsonStr)
+
+	var xhr = new XMLHttpRequest();
+	xhr.open('post','/upload_network');
+	xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	xhr.send(jsonStr);
+	xhr.onreadystatechange = function () {
+	  if (xhr.readyState == 4 && xhr.status == 200) {
+	    console.log(xhr.responseText);
+	    alert("network upload success!")
+	  } 
+	};
 }
