@@ -25,4 +25,8 @@ urlpatterns = [
     url(r'page_1$',view.page_1),
     url(r'page_2$',view.page_2),
     url(r'page_3$',view.page_3),
+    url(r'showExistingDataSets$',view.showExistingDataSets),
+    url(r'createDataSet$',view.createDataSet),
+    url(r'upload_file$',view.upload_file),
+    url(r'createNetwork$',view.createNetwork),
 ]

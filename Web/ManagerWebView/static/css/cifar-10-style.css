@@ -1,0 +1,47 @@
+A:link {text-decoration: none; color:blue;}
+A:visited {text-decoration: none; color:blue;}
+A:active {text-decoration: none; color:blue;}
+A:hover {text-decoration: underline; color: red;}
+
+pre.code {
+    font-family:monospace;
+    background-color:#DDDDDD;
+}
+
+.main {
+    font-family:sans-serif;
+}
+
+span.code {
+    font-family:monospace;
+}
+
+img.cifar-sample {
+    width:32px;
+    height:32px;
+}
+
+td.cifar-class-name {
+    width:100px;
+    font-weight:bold;
+}
+
+table.cifar {
+    border:none;
+}
+
+tr.heading {
+    font-weight:bold;
+}
+
+table.papers {
+    border:none
+}
+
+td.papers {
+    width:100px;
+}
+
+tr.papers-head {
+    font-weight:bold;
+}

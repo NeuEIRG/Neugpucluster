@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<script src="/static/js/jquery.js"></script>
+<script src="/static/js/jQuery.form.js"></script>
+<script src="/static/js/createNetwork.js"></script>
+
+<meta charset="UTF-8">
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta name="description" content="Personal Website Template">
+<meta name="keywords" content="Personal, Website Template, Minimal HTML Template, Freelancer">
+<meta name="author" content="khai tawng">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/css/animate.css">
+<link rel="stylesheet" href="/static/css/magnific-popup.css">
+<link rel="stylesheet" href="/static/css/font-awesome.min.css">
+
+<!-- Main css -->
+<link rel="stylesheet" href="/static/css/style.css">
+<!-- <LINK REL=StyleSheet HREF="cifar-10-style.css"> -->
+
+<style type="text/css">
+    #Cifar{
+/*        margin-top:0px;
+        margin-left:285px;*/
+        position:absolute;
+        left:23%;
+        top:180px;
+    }
+</style>
+
+</head>
+<body data-spy="scroll" data-target=".navbar-collapse" data-offset="50">
+
+<!-- PRE LOADER -->
+<!-- <div class="preloader">
+     <div class="spinner">
+          <span class="spinner-rotate"></span>
+     </div>
+</div>
+ -->
+
+<div class="navbar custom-navbar navbar-fixed-top" role="navigation" style=" background-color:#B00000;">
+     <div class="container">
+
+          <div class="navbar-header">
+               <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon icon-bar"></span>
+                    <span class="icon icon-bar"></span>
+                    <span class="icon icon-bar"></span>
+               </button>
+  
+               <a href="index.html" class="navbar-brand">
+                <div style="color:#F0F0F0;font-weight:900;font-size:60px;font-style:italic;">CSE</div>
+               </a>
+          </div>
+
+          <div class="collapse navbar-collapse">
+               <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a class="smoothScroll" href="#home">
+                            <div id="TopRightText" style="color:#F0F0F0;font-weight:900;font-size:17px;">Model Factory
+                            </div>
+                        </a>
+                
+                    </li>
+               </ul>
+          </div>
+
+     </div>
+</div> 
+
+
+<section id="home">
+       <div class="container">
+            <div class="row" style="z-index:9999;position: absolute;left:470px;top:180px;">
+                  <table id="NetworkDisplayer">
+                    <tr>
+                      <td>
+                      <div id="LayerBeginNode" class="col-md-8 col-sm-8">
+                            <button  class="wow fadeInUp btn btn-default section-btn"  style="background-color:#B00000;">Begin</button>
+                      </div>
+                    </td>
+                    </tr>
+                    <tr id="newLayerHolderTR">
+                      <td>
+                      <div id="newLayerHolder" class="col-md-8 col-sm-8">
+                            <button  onclick="createNewLayer()" class="wow fadeInUp btn btn-default section-btn"  style="background-color:#B00000;">End</button>
+                      </div>
+                    </td>
+                    </tr>
+                  </table>
+            </div>
+       </div>
+</section>
+
+<section id="home">
+       <div class="container">
+            <div class="row"  style="position: fixed;left:35px;top:200px;">
+                  <table id="leftSideTable"> 
+                    <tr id="select_node">
+                      <td>LayerType:</td>
+                      <td>
+                        <select id="LayerSelector" onchange="changeLeftBar()">
+                          <option value ="DataLayer">DataLayer</option>
+                          <option value ="ConvolutionLayer">ConvolutionLayer</option>
+                          <option value ="BatchNormLayer">BatchNormLayer</option>
+                          <option value="ReluLayer">ReluLayer</option>
+                          <option value="FCLayer">FCLayer</option>
+                          <option value="PoolingLayer">PoolingLayer</option>
+                        </select>
+                      </td>
+                    </tr>                
+                    <tr>
+                      <td>image height:</td>
+                      <td>
+                          <form id="upload_search_form" target="submitFrame" enctype="multipart/form-data" action="/upload_file" method="post"> 
+                              {% csrf_token %} 
+                              <input type="text" id="image height"/>
+                          </form>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>image width:</td>
+                      <td>
+                          <form id="upload_search_form" target="submitFrame" enctype="multipart/form-data" action="/upload_file" method="post"> 
+                              {% csrf_token %} 
+                              <input type="text" id="image width"/>
+                          </form>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>image channel:</td>
+                      <td>
+                          <form id="upload_search_form" target="submitFrame" enctype="multipart/form-data" action="/upload_file" method="post"> 
+                              {% csrf_token %} 
+                              <input type="text" id="image channel"/>
+                          </form>
+                      </td>
+                    </tr>
+<!--                     <tr id="output_channel">
+                      <td>output channel:</td>
+                      <td>
+                          <form id="upload_search_form" target="submitFrame" enctype="multipart/form-data" action="/upload_file" method="post"> 
+                              {% csrf_token %} 
+                              <input type="text"/>
+                          </form>
+                      </td>
+                    </tr>
+                    <tr id="kernel_size">
+                      <td>kernel size:</td>
+                      <td>
+                          <form id="upload_search_form" target="submitFrame" enctype="multipart/form-data" action="/upload_file" method="post"> 
+                              {% csrf_token %} 
+                              <input type="text"/>
+                          </form>
+                      </td>
+                    </tr>
+                    <tr id="padding">
+                      <td>padding:</td>
+                      <td>
+                          <form id="upload_search_form" target="submitFrame" enctype="multipart/form-data" action="/upload_file" method="post"> 
+                              {% csrf_token %} 
+                              <input type="text"/>
+                          </form>
+                      </td>
+                    </tr>
+                    <tr id="stride">
+                      <td>stride:</td>
+                      <td>
+                          <form id="upload_search_form" target="submitFrame" enctype="multipart/form-data" action="/upload_file" method="post"> 
+                              {% csrf_token %} 
+                              <input type="text"/>
+                          </form>
+                      </td>
+                    </tr>
+                    <tr id="pooling_type">
+                      <td>pooling type:</td>
+                      <td>
+                          <form id="upload_search_form" target="submitFrame" enctype="multipart/form-data" action="/upload_file" method="post"> 
+                              {% csrf_token %} 
+                              <input type="text"/>
+                          </form>
+                      </td>
+                    </tr> -->
+                  </table>
+                  <div class="col-md-8 col-sm-8">
+                        <button onclick="CreateLayer()" id="leftSideBarButton" class="wow fadeInUp btn btn-default section-btn" data-wow-delay="1s" style="background-color:#B00000;">AddLayer</button>
+                  </div>
+            </div>
+       </div>
+</section>
+
+<section id="home">
+       <div class="container">
+            <div class="row"  style="z-index:10000;position: fixed;right:100px;top:200px;">
+                  <table>
+                    <tr>
+                      <td>Model Name:</td>
+                      <td>
+                          <form id="upload_search_form" target="submitFrame" enctype="multipart/form-data" action="/upload_file" method="post"> 
+                              {% csrf_token %} 
+                              <input type="text"/>
+                          </form>
+                      </td>
+                    </tr>
+                  </table>
+                  <div class="col-md-8 col-sm-8">
+                        <button  onclick="submitNetwork()" class="wow fadeInUp btn btn-default section-btn" data-wow-delay="1s" style="background-color:#B00000;">Submit</button>
+                  </div>
+            </div>
+       </div>
+</section>
+
+<!-- SCRIPTS -->
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/smoothscroll.js"></script>
+<script src="/static/js/jquery.magnific-popup.min.js"></script>
+<script src="/static/js/magnific-popup-options.js"></script>
+<script src="/static/js/wow.min.js"></script>
+<script src="/static/js/custom.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<script src="/static/js/jquery.js"></script>
+<script src="/static/js/jQuery.form.js"></script>
+<script src="/static/js/createDataSet.js"></script>
+
+<meta charset="UTF-8">
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta name="description" content="Personal Website Template">
+<meta name="keywords" content="Personal, Website Template, Minimal HTML Template, Freelancer">
+<meta name="author" content="khai tawng">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/css/animate.css">
+<link rel="stylesheet" href="/static/css/magnific-popup.css">
+<link rel="stylesheet" href="/static/css/font-awesome.min.css">
+
+<!-- Main css -->
+<link rel="stylesheet" href="/static/css/style.css">
+<!-- <LINK REL=StyleSheet HREF="cifar-10-style.css"> -->
+
+<style type="text/css">
+    #Cifar{
+/*        margin-top:0px;
+        margin-left:285px;*/
+        position:absolute;
+        left:23%;
+        top:180px;
+    }
+</style>
+
+</head>
+<body data-spy="scroll" data-target=".navbar-collapse" data-offset="50">
+
+<!-- PRE LOADER -->
+<!-- <div class="preloader">
+     <div class="spinner">
+          <span class="spinner-rotate"></span>
+     </div>
+</div>
+ -->
+
+<div class="navbar custom-navbar navbar-fixed-top" role="navigation" style=" background-color:#B00000;">
+     <div class="container">
+
+          <div class="navbar-header">
+               <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon icon-bar"></span>
+                    <span class="icon icon-bar"></span>
+                    <span class="icon icon-bar"></span>
+               </button>
+  
+               <a href="index.html" class="navbar-brand">
+                <div style="color:#F0F0F0;font-weight:900;font-size:60px;font-style:italic;">CSE</div>
+               </a>
+          </div>
+
+          <div class="collapse navbar-collapse">
+               <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a class="smoothScroll" href="#home">
+                            <div id="TopRightText" style="color:#F0F0F0;font-weight:900;font-size:17px;">Cifar-10</div>
+                        </a>
+                    </li>
+               </ul>
+          </div>
+
+     </div>
+</div> 
+
+
+<section id="home">
+    <div id="upload_files" class="div_1" style="left:12px;position: absolute;">
+        <form id="upload_search_form" target="submitFrame" enctype="multipart/form-data" action="/upload_file" method="post">  
+            {% csrf_token %}
+             DataSet Name:&nbsp;<input id="input_dataset_name" type="text" name="dataset_name" autocomplete="off"/>
+            <br/> <br/> 
+             Class Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="input_class_name" type="text" name="class_name" autocomplete="off"/>
+           </br><br/> 
+            <div style="left:150px; position:absolute;">
+                <div style="width:50%;padding:0;margin:0;float:left;box-sizing:border-box;">
+ <!--                  <input type="file" name="myfile" />  -->
+                  <div style=" height:0px; overflow:hidden; position:absolute;">
+                    <input type="file"  multiple="multiple" id="up" name="upload_images"/></div>
+                    <button onclick="document.getElementById('up').click();">Upload</button>
+                  </div>   
+
+<!--                 <div style="left:110px; position:absolute; width:50%;padding:0;margin:0;float:left;box-sizing:border-box;"><input type="submit"  value="upload"/> </div> -->
+            </div>
+        </form>  
+    </div>
+    
+    <iframe  id="submitFrame" style="display: none;width:0; height:0" name="submitFrame"  src="about:blank"></iframe>
+
+    <div id="tab" class="div_2" style="cursor:pointer;">
+        <ul id="table">
+        </ul>
+    </div>
+
+    <div id="showCifar10" style="position: absolute;left: 470px;">
+      <table id="ImageDisplayer">
+          <tr>
+              <td class="cifar-class-name">bird&nbsp</td>
+              <td><img src="/static/images/bird1.png" class="cifar-sample" /></td>
+              <td><img src="/static/images/bird2.png" class="cifar-sample" /></td>
+              <td><img src="/static/images/bird3.png" class="cifar-sample" /></td>
+              <td><img src="/static/images/bird4.png" class="cifar-sample" /></td>
+              <td><img src="/static/images/bird5.png" class="cifar-sample" /></td>
+          </tr>
+          <tr>
+              <td class="cifar-class-name">deer&nbsp</td>
+              <td><img src="/static/images/deer1.png" class="cifar-sample" /></td>
+              <td><img src="/static/images/deer2.png" class="cifar-sample" /></td>
+              <td><img src="/static/images/deer3.png" class="cifar-sample" /></td>
+              <td><img src="/static/images/deer4.png" class="cifar-sample" /></td>
+              <td><img src="/static/images/deer5.png" class="cifar-sample" /></td>
+          </tr>
+          <tr>
+              <td class="cifar-class-name">frog&nbsp</td>
+              <td><img src="/static/images/frog1.png" class="cifar-sample" /></td>
+              <td><img src="/static/images/frog2.png" class="cifar-sample" /></td>
+              <td><img src="/static/images/frog3.png" class="cifar-sample" /></td>
+              <td><img src="/static/images/frog4.png" class="cifar-sample" /></td>
+              <td><img src="/static/images/frog5.png" class="cifar-sample" /></td>
+          </tr>
+          <tr>
+              <td class="cifar-class-name">ship&nbsp</td>
+              <td><img src="/static/images/ship1.png" class="cifar-sample" /></td>
+              <td><img src="/static/images/ship2.png" class="cifar-sample" /></td>
+              <td><img src="/static/images/ship3.png" class="cifar-sample" /></td>
+              <td><img src="/static/images/ship4.png" class="cifar-sample" /></td>
+              <td><img src="/static/images/ship5.png" class="cifar-sample" /></td>
+          </tr>
+      </table>
+    </div>
+
+</section>
+
+<!-- SCRIPTS -->
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/smoothscroll.js"></script>
+<script src="/static/js/jquery.magnific-popup.min.js"></script>
+<script src="/static/js/magnific-popup-options.js"></script>
+<script src="/static/js/wow.min.js"></script>
+<script src="/static/js/custom.js"></script>
+
+</body>
+</html>
