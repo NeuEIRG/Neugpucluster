@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<script src="/static/js/jquery.js"></script>
+<script src="/static/js/jQuery.form.js"></script>
+<script src="/static/js/createDataSet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+<script src="/static/js/util.js"></script>
+
+<meta charset="UTF-8">
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta name="description" content="Personal Website Template">
+<meta name="keywords" content="Personal, Website Template, Minimal HTML Template, Freelancer">
+<meta name="author" content="khai tawng">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/css/animate.css">
+<link rel="stylesheet" href="/static/css/magnific-popup.css">
+<link rel="stylesheet" href="/static/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="/static/css/style.css">
+
+<style type="text/css">
+    #Cifar{
+        position:absolute;
+        left:23%;
+        top:180px;
+    }
+</style>
+
+<style>
+canvas{
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+</style>
+
+</head>
+<body data-spy="scroll" data-target=".navbar-collapse" data-offset="50">
+
+
+<div class="navbar custom-navbar navbar-fixed-top" role="navigation" style=" background-color:#B00000;">
+     <div class="container">
+
+          <div class="navbar-header">
+               <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon icon-bar"></span>
+                    <span class="icon icon-bar"></span>
+                    <span class="icon icon-bar"></span>
+               </button>
+  
+               <a href="index.html" class="navbar-brand">
+                <div style="color:#F0F0F0;font-weight:900;font-size:60px;font-style:italic;">CSE</div>
+               </a>
+          </div>
+
+          <div class="collapse navbar-collapse">
+               <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a class="smoothScroll" href="#home">
+                            <div id="TopRightText" style="color:#F0F0F0;font-weight:900;font-size:17px;">Train</div>
+                        </a>
+                    </li>
+               </ul>
+          </div>
+
+     </div>
+</div> 
+
+
+<section id="home">
+    <div id="upload_files" class="div_1" style="left:12px;position: absolute;">
+        <form id="upload_search_form" target="submitFrame" enctype="multipart/form-data" action="/upload_train_options" method="post">  
+            {% csrf_token %}
+             DataSet Name:&nbsp;&nbsp;<input id="input_dataset_name" type="text" name="dataset_name" autocomplete="off"/>
+            <br/><br/> 
+             Class Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="input_class_name" type="text" name="class_name" autocomplete="off"/>
+             <br/><br/> 
+             Learning Rate:&nbsp;&nbsp;<input id="input_learning_rate" type="text" name="class_name" autocomplete="off"/>
+             <br/><br/> 
+             Batch Size:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="input_batch_size" type="text" name="class_name" autocomplete="off"/>
+           </br><br/> 
+            <div style="left:150px; position:absolute;">
+                <div style="width:50%;padding:0;margin:0;float:left;box-sizing:border-box;">
+ <!--                  <input type="file" name="myfile" />  -->
+                  <div style=" height:0px; overflow:hidden; position:absolute;">
+                    <input type="file"  multiple="multiple" id="up" name="upload_images"/></div>
+                    <button onclick="document.getElementById('up').click();">Train</button>
+                  </div>   
+
+<!--                 <div style="left:110px; position:absolute; width:50%;padding:0;margin:0;float:left;box-sizing:border-box;"><input type="submit"  value="upload"/> </div> -->
+            </div>
+        </form>  
+    </div>
+    
+    <iframe  id="submitFrame" style="display: none;width:0; height:0" name="submitFrame"  src="about:blank"></iframe>
+
+    <div id="tab" class="div_2" style="cursor:pointer;">
+        <ul id="table">
+        </ul>
+    </div>
+
+    <div style="position: absolute;left:40%;">
+        <table>
+            <tr>
+                <td>
+                    <canvas id="canvas1" style="height:130px;width:50%"></canvas>
+                </td>
+                <td>
+                    <canvas id="canvas2" style="height:130px;width:50%"></canvas>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <canvas id="canvas3" style="height:130px;width:50%"></canvas>
+                </td>
+                <td>
+                    <canvas id="canvas4" style="height:130px;width:50%"></canvas>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br>
+    <br>
+    <button id="addData" style="display: none;">Add Data</button>
+    <script>
+        var config1 = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Train Accuracy',
+                    backgroundColor: window.chartColors.blue,
+                    borderColor: window.chartColors.blue,
+                    data: [
+                    ],
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: false
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Epochs'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Train Accuracy'
+                        },
+                        ticks: {
+                            min: 0
+                        }
+                    }]
+                }
+            }
+        };
+
+        var config2 = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Train Loss',
+                    backgroundColor: window.chartColors.blue,
+                    borderColor: window.chartColors.blue,
+                    data: [
+                    ],
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: false
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Epochs'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Train Loss'
+                        },
+                        ticks: {
+                            min: 0
+                        }
+                    }]
+                }
+            }
+        };
+
+        var config3 = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Test Accuracy',
+                    backgroundColor: window.chartColors.blue,
+                    borderColor: window.chartColors.blue,
+                    data: [
+                    ],
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: false
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Epochs'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Test Accuracy'
+                        },
+                        ticks: {
+                            min: 0
+                        }
+                    }]
+                }
+            }
+        };
+
+        var config4 = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Test Loss',
+                    backgroundColor: window.chartColors.blue,
+                    borderColor: window.chartColors.blue,
+                    data: [
+                    ],
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: false
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Epochs'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Test Loss'
+                        },
+                        ticks: {
+                            min: 0
+                        }
+                    }]
+                }
+            }
+        };
+
+        window.onload = function() {
+            var ctx = document.getElementById('canvas1').getContext('2d');
+            window.myLine1 = new Chart(ctx, config1);
+            ctx = document.getElementById('canvas2').getContext('2d');
+            window.myLine2 = new Chart(ctx, config2);
+            ctx = document.getElementById('canvas3').getContext('2d');
+            window.myLine3 = new Chart(ctx, config3);
+            ctx = document.getElementById('canvas4').getContext('2d');
+            window.myLine4 = new Chart(ctx, config4);
+        };
+
+        document.getElementById('addData').addEventListener('click', function() {
+            if (config.data.datasets.length > 0) {
+                var epochs = config.data.labels.length
+                config.data.labels.push(epochs+1)
+
+                config.data.datasets.forEach(function(dataset) {
+                    dataset.data.push(randomScalingFactor());
+                });
+
+                window.myLine.update();
+            }
+        });
+
+        setInterval("",1000)
+    </script>
+
+
+</section>
+
+
+
+<!-- SCRIPTS -->
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/smoothscroll.js"></script>
+<script src="/static/js/jquery.magnific-popup.min.js"></script>
+<script src="/static/js/magnific-popup-options.js"></script>
+<script src="/static/js/wow.min.js"></script>
+<script src="/static/js/custom.js"></script>
+
+</body>
+</html>

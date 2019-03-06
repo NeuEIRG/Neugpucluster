@@ -28,6 +28,12 @@ def createDataSet(request):
 def createNetwork(request):
 	return render(request,'createNetwork.html')
 
+def train(request):
+	return render(request,'train.html')
+
+def test(request):
+	return render(request,"test.html")
+
 def upload_file(request):
 	if request.POST:
 		images =request.FILES.getlist("upload_images")
@@ -65,6 +71,14 @@ def upload_network(request):
 	if request.POST:
 		json_data = simplejson.loads(request.body)
 		print(json_data)
+		return HttpResponse("over")
+	else:
+		return HttpResponse("fail")
+
+
+def upload_train_options(request):
+	if request.POST:
+		
 		return HttpResponse("over")
 	else:
 		return HttpResponse("fail")

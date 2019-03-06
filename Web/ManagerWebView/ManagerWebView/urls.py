@@ -30,4 +30,7 @@ urlpatterns = [
     url(r'upload_file$',view.upload_file),
     url(r'createNetwork$',view.createNetwork),
     url(r'upload_network$',view.upload_network),
+    url(r'train$',view.train),
+    url(r'test$',view.test),
+    url(r'upload_train_options$',view.upload_train_options),
 ]
