@@ -45,7 +45,11 @@ class Task:
 		self.machine_list = machine_list
 
 def get_Me_Flag():
-	return ClusterStateMonitor.get_Me_Flag()
+	flag = ClusterStateMonitor.get_Me_Flag()
+	if flag:
+		return True
+	else:
+		return False
 
 def get_Cur_State():
 	return ClusterStateMonitor.get_Cur_State()
@@ -58,7 +62,7 @@ def get_Tasks():
 	pass
 
 def get_Machines():
-	pass
+	return get_Cur_State()
 
 def AssignWork(task,machine):
 	pass

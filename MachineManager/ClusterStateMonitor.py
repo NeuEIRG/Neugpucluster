@@ -1,4 +1,5 @@
 from multiprocessing import Process
+import multiprocessing
 import subprocess
 import socket
 import os
@@ -8,46 +9,42 @@ from threading import Lock
 Java_Sock_Port = 8001
 JAVA_CMD = ['java','-cp','/home/jelix/example-zookeeper.jar','cn.itcast.zk.TestZKClient']
 
-Me_Flag = False
-Cur_State = []
-lock = Lock()
+# Me_Flag = False
+# Cur_State = []
+
+Me_Flag = multiprocessing.Value("b",0)
+Cur_State = multiprocessing.Manager().list([])
 
 def get_Me_Flag():
-	lock.acquire()
-	r = Me_Flag
-	lock.release()
-	return r
+	return Me_Flag.value
 
 def get_Cur_State():
-	lock.acquire()
-	r = Cur_State
-	lock.release()
-	return r
+	return Cur_State
 
 
-def run_java_sock_proc(name):
-	print('Run child process %s (%s)...' % (name, os.getpid()))
+def run_java_sock_proc(Me_Flag,Cur_State):
 	server = socket.socket()
 	server.bind(('localhost',Java_Sock_Port))
 	server.listen(5)
-	django_proc_flag = False
-	django_proc = Process(target=run_django_server, args=('test_django',)) 
 	while True:
 		conn,addr = server.accept()
-		lock.acquire()
-		Cur_State = bytes.decode(conn.recv(4096)).split() 
-		Me_Flag = data[-1]==data[-2]
-		lock.release()
+		recv_list = bytes.decode(conn.recv(4096)).split() 
+		while len(Cur_State):
+			Cur_State.pop()
+		for message in recv_list:
+			Cur_State.append(message)
+		Me_Flag.value = Cur_State[-1]==Cur_State[-2]
 	server.close()
 
+
 def run_java(name):
-    java_proc = subprocess.call(JAVA_CMD,stdout=open('./test_1.out','w'),stderr=open('./test_2.out','w'))
+    java_proc = subprocess.call(JAVA_CMD,stdout=open('./java_stdout','w'),stderr=open('./java_stderr','w'))
 
 def run_cluster_monitor():
-    p = Process(target=run_java_sock_proc, args=('test_java_sock',))
+    p = Process(target=run_java_sock_proc, args=(Me_Flag,Cur_State,))
     p.start()
     time.sleep(1)
-    r = Process(target=run_java, args=('test_java',)) 
+    r = Process(target=run_java, args=('java',)) 
     r.start()
     r.join()
     p.join()

@@ -5,7 +5,7 @@ import os
 import time
 import NodeAPIServer
 import TaskMonitor
-import TaskAdder
+# import TaskAdder
 
 
 def StartAPIServer():
@@ -18,7 +18,7 @@ def StartTaskAdder():
 	TaskAdder.run_task_adder()
 
 if __name__=='__main__':
-    api_server = Process(target=StartAPIServer, args=('api_server',)) 
+    api_server = Process(target=StartAPIServer) 
     api_server.start()
     time.sleep(2)
 
@@ -28,20 +28,21 @@ if __name__=='__main__':
     while True:
     	me_flag = NodeAPIServer.get_Me_Flag()
     	if me_flag and (task_monitor_process==None):
-    		task_monitor_process = Process(target=StartTaskMonitor, args=('task_monitor',))
+    		task_monitor_process = Process(target=StartTaskMonitor)
+    		task_monitor_process.start()
 
     	if (not me_flag) and (not (task_monitor_process==None)):
     		task_monitor_process.terminate()
     		task_monitor_process = None
 
-    	if me_flag and (task_adder_process==None):
-    		task_adder_process = Process(target=StartTaskAdder, args=('task_adder',))
+    	# if me_flag and (task_adder_process==None):
+    	# 	task_adder_process = Process(target=StartTaskAdder)
 
-    	if (not me_flag) and (not (task_adder_process==None)):
-    		task_adder_process.terminate()
-    		task_adder_process = None
+    	# if (not me_flag) and (not (task_adder_process==None)):
+    	# 	task_adder_process.terminate()
+    	# 	task_adder_process = None
 
-    	time.sleep(1)
+    	time.sleep(1.5)
 
     api_server.join()
     if not (task_monitor_process==None):
