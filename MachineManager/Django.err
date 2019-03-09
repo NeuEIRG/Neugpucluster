@@ -1,12 +1,1 @@
-[08/Mar/2019 11:09:08] "GET /showExistingDataSets HTTP/1.1" 200 5237
-[08/Mar/2019 11:09:09] "GET /static/images/bird3.png HTTP/1.1" 304 0
-[08/Mar/2019 11:09:09] "GET /static/images/bird2.png HTTP/1.1" 304 0
-[08/Mar/2019 11:09:09] "GET /static/css/animate.css HTTP/1.1" 200 8192
-[08/Mar/2019 11:09:09] "GET /static/css/bootstrap.min.css HTTP/1.1" 200 8192
-[08/Mar/2019 11:09:09] "GET /static/images/bird5.png HTTP/1.1" 304 0
-[08/Mar/2019 11:09:09] "GET /static/css/magnific-popup.css HTTP/1.1" 200 6951
-[08/Mar/2019 11:09:09] "GET /static/images/bird4.png HTTP/1.1" 304 0
-[08/Mar/2019 11:09:09] "GET /static/images/deer1.png HTTP/1.1" 304 0
-[08/Mar/2019 11:09:09] "GET /static/images/deer3.png HTTP/1.1" 304 0
-[08/Mar/2019 11:09:09] "GET /static/images/deer4.png HTTP/1.1" 304 0
-[08/Mar/2019 11:09:09] "GET /static/images/deer2.png HTTP/1.1" 304 0
+docker: Error response from daemon: driver failed programming external connectivity on endpoint cranky_jang (d76226e567368e3f337a18f57f2005bc46ca880055424170e3c1142366932efc): Bind for 0.0.0.0:8000 failed: port is already allocated.
