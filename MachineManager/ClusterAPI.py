@@ -41,11 +41,12 @@ import json
 # 			NodeAPI.Update_TaskInfo(value['object'])
 
 class Job:
-	def __init__(self,DockerFileName,DockerBuildPath,Port,job_type):
+	def __init__(self,DockerFileName,DockerBuildPath,Port,job_type,job_state):
 		self.DockerFileName = DockerFileName
 		self.DockerBuildPath = DockerBuildPath
 		self.Port = Port
 		self.job_type = job_type
+		self.job_state = job_state
 
 	def get_DockerFileName(self):
 		return self.DockerFileName
@@ -58,6 +59,9 @@ class Job:
 
 	def get_job_type(self):
 		return self.job_type
+
+	def get_job_state(self):
+		return self.job_state
 
 
 class Machine:
@@ -117,6 +121,7 @@ class Cluster:
 		else:
 			return None
 
+
 	def get_Tasks(self):
 		task_db_obj = self.query_all_tasks()
 		Task_List = []
@@ -130,7 +135,7 @@ class Cluster:
 				if not machine_obj==None:
 					machine_type = machine_obj['type']
 					machine_job = machine_obj['job']
-					tj = Job(machine_job['DockerFileName'],machine_job['DockerBuildPath'],machine_job['Port'],machine_job['job_type'])
+					tj = Job(machine_job['DockerFileName'],machine_job['DockerBuildPath'],machine_job['Port'],machine_job['job_type'],machine_job['job_state'])
 					tm = Machine(m,machine_type,tj)
 					machine_list_obj.append(tm)
 			t = Task(name,machine_list_obj)
@@ -140,33 +145,61 @@ class Cluster:
 	def insert_one_machine(self,data):
 		self.clusterDataBase.insert_one(data,self.MachineTable,self.DataBase)
 
+	def Init(self,machine_list):
+		for m in machine_list:
+			spec = {'ip_address':m['ip_address']}
+			machine_db_obj = self.query_spec_machine(spec)
+			machine_obj = self.ParseDbObj(machine_db_obj)
+			if len(machine_obj)==0:
+				m['job'] = "none"
+				self.insert_one_machine(m)
+
+	def ParseJob(job_obj):
+		ret = {
+				"DockerFileName":job_obj.get_DockerFileName(),
+				"DockerBuildPath":job_obj.get_DockerBuildPath(),
+				"job_type":job_obj.get_job_type(),
+				"Port":job_obj.get_Port(),
+				"job_state":job_obj.get_job_state()
+			}
+		return ret
+
 	def AddMachines(self,machine_list):
 		for m in machine_list:
 			data = {}
 			data['ip_address'] = m.get_ip_address()
 			data['type'] = m.get_machine_type()
 			job_obj = m.get_job()
-			data['job'] = {
-				"DockerFileName":job_obj.get_DockerFileName(),
-				"DockerBuildPath":job_obj.get_DockerBuildPath(),
-				"job_type":job_obj.get_job_type(),
-				"Port":job_obj.get_Port()
-			}
+			data['job'] = ParseJob(job_obj)
 			self.insert_one_machine(data)
 
 	def update_one_machine(self,query,value):
 		return self.clusterDataBase.update_one(query,value,self.MachineTable,self.DataBase)
+
+	def get_running_job(job_db):
+		job_db['job_state'] = "running"
+		ret = {
+		 	"$set": {
+				"job" : job_db
+		 	}
+		}
+		return ret
+
+	def get_finished_job(job_db):
+		job_db['job_state'] = "finished"
+		ret = {
+		 	"$set": {
+				"job" : job_db
+		 	}
+		}
+		return ret
 
 	def AssignWork(self,machine):
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		s.connect((machine.get_ip_address(), 8003))
 		query = {'ip_address':machine.get_ip_address()}
 		job = machine.get_job()
-		job_db = {}
-		job_db['DockerFileName'] = job.get_DockerFileName()
-		job_db['DockerBuildPath'] = job.get_DockerBuildPath()
-		job_db['Port'] = job.get_Port()
-		job_db['job_type'] = job.get_job_type()
+		job_db = ParseJob(job)
 		value =  {
 		 	"$set": {
 				"job" : job_db
@@ -175,6 +208,9 @@ class Cluster:
 		self.update_one_machine(query,value)
 		trans_data = job_db
 		trans_data['message_type'] = "addJob"
+		trans_data['query'] = query
+		trans_data['running_value'] = get_running_job(job_db)
+		trans_data['finished_value'] = get_finished_job(job_db)
 		json_data = json.dumps(trans_data)
 		s.send(bytes(json_data,encoding="utf8"))
 		recv_data = s.recv(4096)
@@ -208,11 +244,7 @@ class Cluster:
 		for m in task.get_machineList():
 			query = {'ip_address':machine.get_ip_address()}
 			job = machine.get_job()
-			job_db = {}
-			job_db['DockerFileName'] = job.get_DockerFileName()
-			job_db['DockerBuildPath'] = job.get_DockerBuildPath()
-			job_db['Port'] = job.get_Port()
-			job_db['job_type'] = job.get_job_type()
+			job_db = ParseJob(job)
 			value =  {
 			 	"$set": {
 					"job" : job_db
@@ -243,7 +275,6 @@ class Cluster:
 
 		data = {}
 		data['message_type'] = 'busy'
-		data['job_type'] = machine.get_job().get_job_type()
 
 		json_data = json.dumps(data)
 		s.send(bytes(json_data,encoding="utf8"))
@@ -279,6 +310,8 @@ class Cluster:
 		data = {}
 		data['machine_list'] = machine_list
 		self.insert_one_cluster(data)
+
+
 
 
 	def get_Task_Error_Machines(task):
