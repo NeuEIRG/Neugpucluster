@@ -103,6 +103,40 @@ class Cluster:
 		self.MachineTable = "TestMachineTable"
 		self.ClusterTable = "TestStateTable"
 		self.DataBase = "TestDlpDataBase"
+		self.TaskParamTable = "TestTaskParamTable"
+
+	def query_spec_task_param(spec):
+		return self.clusterDataBase.query_spec(spec,self.TaskParamTable,self.DataBase)
+
+	def insert_one_task_param(data):
+		self.clusterDataBase.insert_one(data,self.TaskParamTable,self.DataBase)
+
+	def update_one_task_param(self,query,value):
+		return self.clusterDataBase.update_one(query,value,self.TaskParamTable,self.DataBase)
+
+	def exist_task_param(task_name):
+		spec = {"task_name":task_name}
+		obj = query_spec_task_param(spec)
+		ret = []
+		for o in obj:
+			ret.append(o)
+		return not len(ret)==0
+
+	def UpdateTaskParam(task_name,param):
+		if self.exist_task_param(task_name):
+			query = {'task_name':task_name}
+			value =  {
+			 	"$set": {
+					"param" : param
+			 	}
+			}
+			self.update_one_task_param(query,value)
+		else:
+			data = {}
+			data['task_name'] = task_name
+			data['param'] = param
+			self.insert_one_task_param(data)
+
 
 
 	def query_all_tasks(self):
@@ -287,6 +321,14 @@ class Cluster:
 			return True
 		else:
 			return False
+
+	def get_AviableMachines():
+		machine_list = self.get_Machines()
+		ret = []
+		for m in machine_list:
+			if not self.is_machine_busy(m):
+				ret.append(m)
+		return m
 
 	def query_all_cluster(self):
 		return self.clusterDataBase.query_all(self.ClusterTable,self.DataBase)
