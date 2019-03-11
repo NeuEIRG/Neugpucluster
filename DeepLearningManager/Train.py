@@ -36,10 +36,7 @@ def get_machine(ip_address,machine_type,job):
 def get_task_name(dataset_name,network_name):
 	return time.strftime('%Y:%m:%d:%H:%M:%S',time.localtime(time.time()))+":"+dataset_name+":"+network_name
 
-def set_Task_Param(cluster,json_data,ps_spec,worker_spec):
-	dataset_name = json_data['dataset_name']
-	network_name = json_data['network_name']
-	task_name = get_task_name(dataset_name,network_name)
+def set_Task_Param(cluster,json_data,task_name,ps_spec,worker_spec):
 	batch_size = json_data['batch_size']
 	learning_rate = json_data['learning_rate']
 	network = json_data['network']
@@ -55,10 +52,7 @@ def set_Task_Param(cluster,json_data,ps_spec,worker_spec):
 
 	cluster.UpdateTaskParam(task_name,param)
 
-def set_Task_Param(cluster,json_data):
-	dataset_name = json_data['dataset_name']
-	network_name = json_data['network_name']
-	task_name = get_task_name(dataset_name,network_name)
+def set_Task_Param(cluster,json_data,task_name):
 	batch_size = json_data['batch_size']
 	learning_rate = json_data['learning_rate']
 	network = json_data['network']
@@ -92,7 +86,7 @@ def Train(json_data):
 		worker_spec = nodes[1:]
 		if len(worker_spec)==1:
 			worker_spec = [worker_spec]
-		set_Task_Param(cluster,json_data,ps_spec,worker_spec)
+		set_Task_Param(cluster,json_data,task_name,ps_spec,worker_spec)
 		cluster.AddTask(task)
 		error_list = cluster.AssignTask(task)
 	elif len(nodes)==1:
@@ -103,9 +97,10 @@ def Train(json_data):
 		network_name = json_data['network_name']
 		task_name = get_task_name(dataset_name,network_name)
 		task = ClusterAPI.Task(task_name,machineList)
-		set_Task_Param(cluster,json_data)
+		set_Task_Param(cluster,json_data,task_name)
 		cluster.AddTask(task)
 		error_list = cluster.AssignTask(task)
+		print(task_name)
 
 
 json_data = {}

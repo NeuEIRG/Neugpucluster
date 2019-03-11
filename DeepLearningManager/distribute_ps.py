@@ -15,19 +15,23 @@ import ClusterAPI
 
 if __name__ == '__main__':
 
-	task_name = sys.argv[0]
+	task_name = sys.argv[1]
 
 	connect_url = ["localhost:27017"]
 	cluster = ClusterAPI.Cluster(connect_url)
 	param = cluster.getTaskParam(task_name)
 
 	job_name = "ps"
-	task_index = sys.argv[1]
+	task_index = sys.argv[2]
 
-	ps_spec = param['ps_spec']
-	worker_spec = param['worker_spec']
+	print(task_name)
+	print(param)
 
-	num_workers = len(worker_spec)
-	cluster = tf.train.ClusterSpec({"ps":ps_spec,"worker":worker_spec})
-	server = tf.train.Server(cluster,job_name=job_name,task_index=task_index)
-	server.join()
+	# ps_spec = param['ps_spec']
+	# worker_spec = param['worker_spec']
+
+
+	# num_workers = len(worker_spec)
+	# cluster = tf.train.ClusterSpec({"ps":ps_spec,"worker":worker_spec})
+	# server = tf.train.Server(cluster,job_name=job_name,task_index=task_index)
+	# server.join()
