@@ -38,10 +38,10 @@ def run_docker_proc(json_data):
 def check_busy(process_list):
 	return len(process_list)>0
 
-def run_task_adder():
+def run_task_adder(ip_address):
 	Task_Port = 8003
 	server = socket.socket()
-	server.bind(('localhost',Task_Port))
+	server.bind((ip_address,Task_Port))
 	server.listen(5)
 	process_list = []
 	while True:
@@ -62,9 +62,10 @@ def run_task_adder():
 			else:
 				conn.send(b"success")
 				# run_docker_proc(dockerfile_name,docker_build_path,port)
-				s = Process(target=run_docker_proc, args=(json_data,)) 
-				s.start()
-				process_list.append(s)
+				# s = Process(target=run_docker_proc, args=(json_data,)) 
+				# s.start()
+				# process_list.append(s)
+				print(json_data)
 		elif message_type=="busy":
 			busy = check_busy(process_list)
 			if busy:

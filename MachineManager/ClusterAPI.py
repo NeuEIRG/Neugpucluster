@@ -1,6 +1,7 @@
 import DataBaseAPI
 import socket
 import json
+from copy import deepcopy
 
 # def run_task_monitor(cur_machines):
 # 	TaskError = {}
@@ -105,24 +106,24 @@ class Cluster:
 		self.DataBase = "TestDlpDataBase"
 		self.TaskParamTable = "TestTaskParamTable"
 
-	def query_spec_task_param(spec):
+	def query_spec_task_param(self,spec):
 		return self.clusterDataBase.query_spec(spec,self.TaskParamTable,self.DataBase)
 
-	def insert_one_task_param(data):
+	def insert_one_task_param(self,data):
 		self.clusterDataBase.insert_one(data,self.TaskParamTable,self.DataBase)
 
 	def update_one_task_param(self,query,value):
 		return self.clusterDataBase.update_one(query,value,self.TaskParamTable,self.DataBase)
 
-	def exist_task_param(task_name):
+	def exist_task_param(self,task_name):
 		spec = {"task_name":task_name}
-		obj = query_spec_task_param(spec)
+		obj = self.query_spec_task_param(spec)
 		ret = []
 		for o in obj:
 			ret.append(o)
 		return not len(ret)==0
 
-	def UpdateTaskParam(task_name,param):
+	def UpdateTaskParam(self,task_name,param):
 		if self.exist_task_param(task_name):
 			query = {'task_name':task_name}
 			value =  {
@@ -136,6 +137,15 @@ class Cluster:
 			data['task_name'] = task_name
 			data['param'] = param
 			self.insert_one_task_param(data)
+
+
+	def getTaskParam(self,task_name):
+		spec = {"task_name":task_name}
+		obj = self.query_spec_task_param(spec)
+		ret = []
+		for o in obj:
+			ret.append(o)
+		return ret
 
 
 
@@ -184,11 +194,11 @@ class Cluster:
 			spec = {'ip_address':m['ip_address']}
 			machine_db_obj = self.query_spec_machine(spec)
 			machine_obj = self.ParseDbObj(machine_db_obj)
-			if len(machine_obj)==0:
+			if machine_obj==None:
 				m['job'] = "none"
 				self.insert_one_machine(m)
 
-	def ParseJob(job_obj):
+	def ParseJob(self,job_obj):
 		ret = {
 				"DockerFileName":job_obj.get_DockerFileName(),
 				"DockerBuildPath":job_obj.get_DockerBuildPath(),
@@ -204,13 +214,13 @@ class Cluster:
 			data['ip_address'] = m.get_ip_address()
 			data['type'] = m.get_machine_type()
 			job_obj = m.get_job()
-			data['job'] = ParseJob(job_obj)
+			data['job'] = self.ParseJob(job_obj)
 			self.insert_one_machine(data)
 
 	def update_one_machine(self,query,value):
 		return self.clusterDataBase.update_one(query,value,self.MachineTable,self.DataBase)
 
-	def get_running_job(job_db):
+	def get_running_job(self,job_db):
 		job_db['job_state'] = "running"
 		ret = {
 		 	"$set": {
@@ -219,7 +229,7 @@ class Cluster:
 		}
 		return ret
 
-	def get_finished_job(job_db):
+	def get_finished_job(self,job_db):
 		job_db['job_state'] = "finished"
 		ret = {
 		 	"$set": {
@@ -233,7 +243,7 @@ class Cluster:
 		s.connect((machine.get_ip_address(), 8003))
 		query = {'ip_address':machine.get_ip_address()}
 		job = machine.get_job()
-		job_db = ParseJob(job)
+		job_db = self.ParseJob(job)
 		value =  {
 		 	"$set": {
 				"job" : job_db
@@ -243,8 +253,8 @@ class Cluster:
 		trans_data = job_db
 		trans_data['message_type'] = "addJob"
 		trans_data['query'] = query
-		trans_data['running_value'] = get_running_job(job_db)
-		trans_data['finished_value'] = get_finished_job(job_db)
+		trans_data['running_value'] = self.get_running_job(deepcopy(job_db))
+		trans_data['finished_value'] = self.get_finished_job(deepcopy(job_db))
 		json_data = json.dumps(trans_data)
 		s.send(bytes(json_data,encoding="utf8"))
 		recv_data = s.recv(4096)
@@ -275,10 +285,10 @@ class Cluster:
 		task_db['name'] = task.get_name()
 		self.insert_one_task(task_db)
 
-		for m in task.get_machineList():
+		for machine in task.get_machineList():
 			query = {'ip_address':machine.get_ip_address()}
 			job = machine.get_job()
-			job_db = ParseJob(job)
+			job_db = self.ParseJob(job)
 			value =  {
 			 	"$set": {
 					"job" : job_db
@@ -322,13 +332,32 @@ class Cluster:
 		else:
 			return False
 
-	def get_AviableMachines():
+	def is_machine_busy_with_ip_address(self,ip_address):
+		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s.connect((ip_address, 8003))
+
+		data = {}
+		data['message_type'] = 'busy'
+
+		json_data = json.dumps(data)
+		s.send(bytes(json_data,encoding="utf8"))
+		recv_data = s.recv(4096)
+		s.close()
+
+		recv_data = recv_data.decode()
+
+		if recv_data=="yes":
+			return True
+		else:
+			return False
+
+	def get_AviableMachines(self):
 		machine_list = self.get_Machines()
 		ret = []
 		for m in machine_list:
-			if not self.is_machine_busy(m):
+			if not self.is_machine_busy_with_ip_address(m):
 				ret.append(m)
-		return m
+		return ret
 
 	def query_all_cluster(self):
 		return self.clusterDataBase.query_all(self.ClusterTable,self.DataBase)
@@ -344,7 +373,7 @@ class Cluster:
 		machines = []
 		for m in machines_db:
 			machines.append(m)
-		return machines
+		return machines[0]['machine_list']
 
 	def Update_ClusterInfo(self,machine_list):
 		print(machine_list)

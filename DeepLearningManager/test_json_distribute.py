@@ -6,6 +6,7 @@ import os
 import sys
 import random
 import pickle
+import tempfile 
 
 def data_preprocessing(x_train,x_test):
 
@@ -135,8 +136,7 @@ def ParseLossWithWeightDecay(json_obj,cross_entropy):
 	loss = cross_entropy + l2*meta['weight_decay']
 	return loss
 
-def ParseCrossEntropy(json_obj,labels):
-	meta = json_obj['meta']
+def ParseCrossEntropy(net,labels):
 	cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=labels,logits=net))
 	return cross_entropy
 
@@ -202,9 +202,9 @@ if __name__ == '__main__':
 	train_steps = 1000000
 	sync_replicas = False
 	replicas_to_aggregate = None 
-	ps_hosts = ["172.28.54.158:2222"]
-	worker_hosts = ["172.28.54.158:2222"]
-	job_name = "worker"
+	ps_hosts = ["192.168.43.231:2222"]
+	worker_hosts = ["192.168.43.106:2222"]
+	job_name = "ps"
 	task_index = 0 
 
 	ps_spec = ps_hosts
@@ -225,7 +225,7 @@ if __name__ == '__main__':
 			json_obj = json.load(json_file)
 
 		net,x,y_ = ParseNetwork(json_obj)
-		cross_entropy = ParseCrossEntropy(json_obj,net,y_)
+		cross_entropy = ParseCrossEntropy(net,y_)
 		opt = ParseOptimizer(json_obj,cross_entropy)
 		accuracy = ParseAccuracy(json_obj,net,y_)
 
@@ -267,35 +267,29 @@ if __name__ == '__main__':
 
 	train_x, train_y, test_x, test_y = prepare_data(image_data_url,json_obj['meta'])
 
-	saver = tf.train.Saver()
+    for ep in range(1, total_epoch+1):
+        lr = learning_rate_schedule(ep)
+        pre_index = 0
+        train_acc = 0.0
+        train_loss = 0.0
 
-	with tf.Session() as sess:
+        for it in range(1, iterations+1):
+            batch_x = train_x[pre_index:pre_index+batch_size]
+            batch_y = train_y[pre_index:pre_index+batch_size]
 
-	    sess.run(tf.global_variables_initializer())
+            _, batch_loss = sess.run([train_step, cross_entropy],
+                                     feed_dict={x: batch_x, y_: batch_y, keep_prob: dropout_rate,
+                                                learning_rate: lr, train_flag: True})
+            batch_acc = accuracy.eval(feed_dict={x: batch_x, y_: batch_y, keep_prob: 1.0, train_flag: True})
 
-	    for ep in range(1, total_epoch+1):
-	        lr = learning_rate_schedule(ep)
-	        pre_index = 0
-	        train_acc = 0.0
-	        train_loss = 0.0
+            train_loss += batch_loss
+            train_acc += batch_acc
+            pre_index += batch_size
 
-	        for it in range(1, iterations+1):
-	            batch_x = train_x[pre_index:pre_index+batch_size]
-	            batch_y = train_y[pre_index:pre_index+batch_size]
+            if it == iterations:
+                train_loss /= iterations
+                train_acc /= iterations
 
-	            _, batch_loss = sess.run([train_step, loss],
-	                                     feed_dict={x: batch_x, y_: batch_y, keep_prob: dropout_rate,
-	                                                learning_rate: lr, train_flag: True})
-	            batch_acc = accuracy.eval(feed_dict={x: batch_x, y_: batch_y, keep_prob: 1.0, train_flag: True})
+                val_acc, val_loss = run_testing(sess,test_x,test_y,cross_entropy,accuracy)
 
-	            train_loss += batch_loss
-	            train_acc += batch_acc
-	            pre_index += batch_size
 
-	            if it == iterations:
-	                train_loss /= iterations
-	                train_acc /= iterations
-
-	                val_acc, val_loss = run_testing(sess,test_x,test_y,loss,accuracy)
-
-	    save_path = saver.save(sess, model_save_path)

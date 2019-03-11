@@ -11,9 +11,9 @@ batch_size = 100
 learning_rate = 0.01
 sync_replicas = False
 replicas_to_aggregate = None 
-ps_hosts = ["172.28.54.158:2222"]
-worker_hosts = ["172.28.54.158:2222"]
-job_name = "worker"
+ps_hosts = ["192.168.43.231:2222"]
+worker_hosts = ["192.168.43.106:2222"]
+job_name = "ps"
 task_index = 0 
 image_height = 28
 image_width = 28
@@ -43,7 +43,7 @@ if __name__ == '__main__':
 		sm_b = tf.Variable(tf.zeros([10]),name="sm_b")
 
 		x = tf.placeholder(tf.float32,[None,image_width*image_height])
-		y_ = tf,placeholder(tf.float32,[None,10])
+		y_ = tf.placeholder(tf.float32,[None,10])
 
 		hid_lin = tf.nn.xw_plus_b(x,hid_w,hid_b)
 		hid = tf.nn.relu(hid_lin)

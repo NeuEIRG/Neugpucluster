@@ -8,7 +8,7 @@ from threading import Lock
 import ClusterAPI
 
 Java_Sock_Port = 8001
-JAVA_CMD = ['java','-cp','/home/jelix/example-zookeeper.jar','cn.itcast.zk.TestZKClient']
+JAVA_CMD = ['java','-cp','./example-zookeeper.jar','cn.itcast.zk.TestZKClient']
 
 def run_docker_proc(DockerFileName,DockerBuildPath,Port):
 	std_out_file = './'+DockerFileName+'.out'
@@ -63,14 +63,16 @@ def run_java_sock_proc(DockerFileName,DockerBuildPath,Port):
 	server.close()
 
 
-def run_java(name):
-    java_proc = subprocess.call(JAVA_CMD,stdout=open('./java_stdout','w'),stderr=open('./java_stderr','w'))
+def run_java(name,ip_address):
+	global JAVA_CMD
+	JAVA_CMD.append(ip_address)
+	java_proc = subprocess.call(JAVA_CMD,stdout=open('./java_stdout','w'),stderr=open('./java_stderr','w'))
 
-def run_cluster_monitor(DockerFileName,DockerBuildPath,Port):
+def run_cluster_monitor(DockerFileName,DockerBuildPath,Port,ip_address):
 	p = Process(target=run_java_sock_proc,args=(DockerFileName,DockerBuildPath,Port,))
 	p.start()
 	time.sleep(1)
-	r = Process(target=run_java, args=('java',)) 
+	r = Process(target=run_java, args=('java',ip_address,)) 
 	r.start()
 	r.join()
 	p.join()

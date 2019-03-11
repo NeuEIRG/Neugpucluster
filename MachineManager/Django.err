@@ -1,2 +1,2 @@
-docker: Error response from daemon: driver failed programming external connectivity on endpoint gracious_booth (1498c9a7f2b68d61578daa11636b8eb2a68cc22c72032fd003176f81c662eb51): Bind for 0.0.0.0:8000 failed: port is already allocated.
-time="2019-03-09T19:21:57+08:00" level=error msg="error waiting for container: context canceled"
+docker: Error response from daemon: driver failed programming external connectivity on endpoint eloquent_pare (a77c6aeffa8fd8cadadbaff8e4ae534ffd7727445cb07acb96142dc7e9c5295f): Bind for 0.0.0.0:8000 failed: port is already allocated.
+time="2019-03-11T16:49:41+08:00" level=error msg="error waiting for container: context canceled"

@@ -1,0 +1,7 @@
+FROM tensorflow
+MAINTAINER Jelix
+COPY ./MachineManager ~/
+COPY ./DeepLearningManager ~/
+EXPOSE 2222
+RUN pip install simplejson
+CMD ["python","~/manage.py","runserver","0.0.0.0:8000"]
