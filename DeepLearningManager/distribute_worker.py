@@ -192,7 +192,22 @@ def run_testing(sess,test_x,test_y,loss,accuracy):
 
 if __name__ == '__main__':
 
-	json_file_url = "./test.json"
+	task_name = sys.argv[1]
+
+	connect_url = ["localhost:27017"]
+	cluster = ClusterAPI.Cluster(connect_url)
+	param = cluster.getTaskParam(task_name)
+
+	job_name = "worker"
+	task_index = sys.argv[2]
+
+	ps_hosts = param['ps_hosts']
+	worker_hosts = param['worker_hosts']
+
+	image_data_url = param['dataset_url']
+	batch_size = param['batch_size']
+	learning_rate = param['learning_rate']
+	json_obj = param['network']
 	image_data_url = "./cifar-10-batches-py"
 	model_save_path = "./model"
 	total_epoch = 164
@@ -202,10 +217,6 @@ if __name__ == '__main__':
 	train_steps = 1000000
 	sync_replicas = False
 	replicas_to_aggregate = None 
-	ps_hosts = ["192.168.43.231:2222"]
-	worker_hosts = ["192.168.43.106:2222"]
-	job_name = "ps"
-	task_index = 0 
 
 	ps_spec = ps_hosts
 	worker_spec = worker_hosts

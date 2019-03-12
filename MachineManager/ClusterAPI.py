@@ -48,6 +48,13 @@ class Job:
 		self.Port = Port
 		self.job_type = job_type
 		self.job_state = job_state
+		self.task_id = 0
+
+	def set_TaskId(self,task_id):
+		self.task_id = task_id
+
+	def get_TaskId(self):
+		return self.task_id
 
 	def get_DockerFileName(self):
 		return self.DockerFileName
@@ -204,7 +211,8 @@ class Cluster:
 				"DockerBuildPath":job_obj.get_DockerBuildPath(),
 				"job_type":job_obj.get_job_type(),
 				"Port":job_obj.get_Port(),
-				"job_state":job_obj.get_job_state()
+				"job_state":job_obj.get_job_state(),
+				"task_id":job_obj.get_TaskId()
 			}
 		return ret
 
@@ -221,6 +229,7 @@ class Cluster:
 		return self.clusterDataBase.update_one(query,value,self.MachineTable,self.DataBase)
 
 	def get_running_job(self,job_db):
+		job_db = deepcopy(job_db)
 		job_db['job_state'] = "running"
 		ret = {
 		 	"$set": {
@@ -230,6 +239,7 @@ class Cluster:
 		return ret
 
 	def get_finished_job(self,job_db):
+		job_db = deepcopy(job_db)
 		job_db['job_state'] = "finished"
 		ret = {
 		 	"$set": {
@@ -238,7 +248,7 @@ class Cluster:
 		}
 		return ret
 
-	def AssignWork(self,machine):
+	def AssignWork(self,machine,task_name):
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		s.connect((machine.get_ip_address(), 8003))
 		query = {'ip_address':machine.get_ip_address()}
@@ -250,11 +260,15 @@ class Cluster:
 		 	}
 		}
 		self.update_one_machine(query,value)
-		trans_data = job_db
+		trans_data = deepcopy(job_db)
 		trans_data['message_type'] = "addJob"
 		trans_data['query'] = query
-		trans_data['running_value'] = self.get_running_job(deepcopy(job_db))
-		trans_data['finished_value'] = self.get_finished_job(deepcopy(job_db))
+		print(job_db)
+		trans_data['running_value'] = self.get_running_job(job_db)
+		print(job_db)
+		trans_data['finished_value'] = self.get_finished_job(job_db)
+		print(job_db)
+		trans_data['task_name'] = task_name
 		json_data = json.dumps(trans_data)
 		s.send(bytes(json_data,encoding="utf8"))
 		recv_data = s.recv(4096)
@@ -269,8 +283,9 @@ class Cluster:
 
 	def AssignTask(self,task):
 		error_list = []
+		task_name = task.get_name()
 		for m in task.get_machineList():
-			if not self.AssignWork(m):
+			if not self.AssignWork(m,task_name):
 				error_list.append(m)
 		return error_list
 

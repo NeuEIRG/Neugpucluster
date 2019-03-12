@@ -1,7 +1,8 @@
-FROM tensorflow
+FROM daocloud.io/daocloud/tensorflow:latest
 MAINTAINER Jelix
-COPY ./MachineManager ~/
-COPY ./DeepLearningManager ~/
-EXPOSE 2222
-RUN pip install simplejson
-CMD ["python","~/manage.py","runserver","0.0.0.0:8000"]
+COPY ./ ~/
+EXPOSE 27017
+WORKDIR ~/DeepLearningManager/
+RUN pip install ../pymongo-3.7.2-cp27-cp27mu-manylinux1_x86_64.whl
+CMD ["python","./distribute_ps.py"]
+#CMD ["ls","-l","~/"]

@@ -11,17 +11,21 @@ class Task:
 		self.name = name
 		self.machineList = machineList
 
-def get_ps_job():
+def get_ps_job(task_id):
 	DockerFileName = "TF_PS_GPU"
 	DockerBuildPath = "../"
 	Port = "2222"
-	return ClusterAPI.Job(DockerFileName,DockerBuildPath,Port,"ps","not_started")
+	job = ClusterAPI.Job(DockerFileName,DockerBuildPath,Port,"ps","not_started")
+	job.set_TaskId(task_id)
+	return job
 
-def get_worker_job():
+def get_worker_job(task_id):
 	DockerFileName = "TF_WORKER_GPU"
 	DockerBuildPath = "../"
 	Port = "2222"
-	return ClusterAPI.Job(DockerFileName,DockerBuildPath,Port,"worker","not_started")
+	job = ClusterAPI.Job(DockerFileName,DockerBuildPath,Port,"worker","not_started")
+	job.set_TaskId(task_id)
+	return job
 
 def get_single_job():
 	DockerFileName = "TF_SINGLE_GPU"
@@ -73,10 +77,10 @@ def Train(json_data):
 	nodes = cluster.get_AviableMachines()
 	if len(nodes)>1:
 		machineList = []
-		ps_machine = get_machine(nodes[0],"gpu",get_ps_job())
+		ps_machine = get_machine(nodes[0],"gpu",get_ps_job(0))
 		machineList.append(ps_machine)
 		for i in range(1,len(nodes)):
-			worker_machine = get_machine(nodes[i],"gpu",get_worker_job())
+			worker_machine = get_machine(nodes[i],"gpu",get_worker_job(i-1))
 			machineList.append(worker_machine)
 		dataset_name = json_data['dataset_name']
 		network_name = json_data['network_name']

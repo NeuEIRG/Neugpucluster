@@ -92,8 +92,8 @@ def load_data(files, data_dir, label_count):
 
 def prepare_data():
     print("======Loading data======")
-    download_data()
-    data_dir = './cifar10-dataset'
+    # download_data()
+    data_dir = './cifar-10-batches-py'
     image_dim = image_size * image_size * img_channels
     meta = unpickle(data_dir + '/batches.meta')
 
@@ -211,6 +211,9 @@ def run_testing(sess, ep):
 
 
 if __name__ == '__main__':
+
+    print(sys.argv[1])
+    print(sys.argv[2])
 
     train_x, train_y, test_x, test_y = prepare_data()
     train_x, test_x = data_preprocessing(train_x, test_x)

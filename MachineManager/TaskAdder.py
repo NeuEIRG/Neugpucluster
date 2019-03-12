@@ -19,6 +19,10 @@ def run_docker_proc(json_data):
 
 	cluster.update_one_machine(query,running_value)
 
+	DockerFileName = json_data['DockerFileName']
+	DockerBuildPath = json_data['DockerBuildPath']
+	Port = json_data['Port']
+
 	dockerfile_name = json_data['DockerFileName']
 	docker_build_path = json_data['DockerBuildPath']
 	port = json_data['Port']
@@ -26,11 +30,13 @@ def run_docker_proc(json_data):
 	std_err_file = './'+DockerFileName+'.err'
 	DockerFilePath = '../DockerImages/' + DockerFileName + "Image/" + DockerFileName + "Dockerfile" 
 	Docker_Build_Cmd = ['docker','build','-t','dlm/'+DockerFileName.lower(),'-f',DockerFilePath,DockerBuildPath]
+
 	# print(DockerFilePath)
 	# print(Docker_Build_Cmd)
+
 	docker_build_proc = subprocess.call(Docker_Build_Cmd,stdout=open(std_out_file,'w'),stderr=open(std_err_file,'w'))
-	Docker_Run_Cmd = ['docker','run','-p',Port+":"+Port,'dlm/'+DockerFileName.lower()]
-	# print(Docker_Run_Cmd)
+	Docker_Run_Cmd = ['docker','run','--net=host','-p',Port+":"+Port,'dlm/'+DockerFileName.lower(),json_data['task_name'],str(json_data['task_id'])]
+
 	docker_run_proc = subprocess.call(Docker_Run_Cmd,stdout=open(std_out_file,'w'),stderr=open(std_err_file,'w'))
 
 	cluster.update_one_machine(query,finished_value)
@@ -61,10 +67,9 @@ def run_task_adder(ip_address):
 				conn.send(b"error")
 			else:
 				conn.send(b"success")
-				# run_docker_proc(dockerfile_name,docker_build_path,port)
-				# s = Process(target=run_docker_proc, args=(json_data,)) 
-				# s.start()
-				# process_list.append(s)
+				s = Process(target=run_docker_proc, args=(json_data,)) 
+				s.start()
+				process_list.append(s)
 				print(json_data)
 		elif message_type=="busy":
 			busy = check_busy(process_list)
