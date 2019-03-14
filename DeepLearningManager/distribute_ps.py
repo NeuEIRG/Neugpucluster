@@ -11,13 +11,14 @@ import tempfile
 sys.path.append("../MachineManager")
 
 import ClusterAPI
-
+import cluster_settings
 
 if __name__ == '__main__':
 
 	task_name = sys.argv[1]
 
-	connect_url = ["localhost:27017"]
+	# connect_url = ["localhost:27017"]
+	connect_url = cluster_settings.connect_url
 	cluster = ClusterAPI.Cluster(connect_url)
 	param = cluster.getTaskParam(task_name)
 

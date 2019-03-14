@@ -8,6 +8,11 @@ import random
 import pickle
 import tempfile 
 
+sys.path.append("../MachineManager")
+
+import cluster_settings
+import ClusterAPI
+
 def data_preprocessing(x_train,x_test):
 
     x_train = x_train.astype('float32')
@@ -194,20 +199,19 @@ if __name__ == '__main__':
 
 	task_name = sys.argv[1]
 
-	connect_url = ["localhost:27017"]
+	# connect_url = ["localhost:27017"]
+	connect_url = cluster_settings.connect_url
 	cluster = ClusterAPI.Cluster(connect_url)
 	param = cluster.getTaskParam(task_name)
+	param = param[0][u'param']
 
 	job_name = "worker"
-	task_index = sys.argv[2]
+	task_index = int(sys.argv[2])
 
-	ps_hosts = param['ps_hosts']
-	worker_hosts = param['worker_hosts']
-
-	image_data_url = param['dataset_url']
-	batch_size = param['batch_size']
-	learning_rate = param['learning_rate']
-	json_obj = param['network']
+	image_data_url = param[u'dataset_url']
+	batch_size = param[u'batch_size']
+	learning_rate = param[u'learning_rate']
+	json_obj = json.loads(param[u'network'])
 	image_data_url = "./cifar-10-batches-py"
 	model_save_path = "./model"
 	total_epoch = 164
@@ -218,22 +222,26 @@ if __name__ == '__main__':
 	sync_replicas = False
 	replicas_to_aggregate = None 
 
-	ps_spec = ps_hosts
-	worker_spec = worker_hosts
+	ps_spec = param[u'ps_spec']
+	worker_spec = param[u'worker_spec']
+	port = param[u'port']
+
+	for i in range(len(ps_spec)):
+		ps_spec[i] = ps_spec[i] + ":" + port
+
+	for i in range(len(worker_spec)):
+		worker_spec[i] = worker_spec[i] + ":" + port
+
 	num_workers = len(worker_spec)
 	cluster = tf.train.ClusterSpec({"ps":ps_spec,"worker":worker_spec})
 	server = tf.train.Server(cluster,job_name=job_name,task_index=task_index)
-	if job_name == "ps":
-		server.join()
+
 	is_chief = (task_index==0)
 	worker_device = "job:worker/task:%d/gpu:0" % task_index
 	with tf.device(tf.train.replica_device_setter(
 		worker_device=worker_device,
 		ps_device="/job:ps/cpu:0",
 		cluster=cluster)):
-
-		with open(json_file_url,"r") as json_file:
-			json_obj = json.load(json_file)
 
 		net,x,y_ = ParseNetwork(json_obj)
 		cross_entropy = ParseCrossEntropy(net,y_)
@@ -279,28 +287,32 @@ if __name__ == '__main__':
 	train_x, train_y, test_x, test_y = prepare_data(image_data_url,json_obj['meta'])
 
     for ep in range(1, total_epoch+1):
-        lr = learning_rate_schedule(ep)
-        pre_index = 0
-        train_acc = 0.0
-        train_loss = 0.0
+		lr = learning_rate_schedule(ep)
+		pre_index = 0
+		train_acc = 0.0
+		train_loss = 0.0
 
-        for it in range(1, iterations+1):
-            batch_x = train_x[pre_index:pre_index+batch_size]
-            batch_y = train_y[pre_index:pre_index+batch_size]
+		for it in range(1, iterations+1):
+			batch_x = train_x[pre_index:pre_index+batch_size]
+			batch_y = train_y[pre_index:pre_index+batch_size]
 
-            _, batch_loss = sess.run([train_step, cross_entropy],
-                                     feed_dict={x: batch_x, y_: batch_y, keep_prob: dropout_rate,
-                                                learning_rate: lr, train_flag: True})
-            batch_acc = accuracy.eval(feed_dict={x: batch_x, y_: batch_y, keep_prob: 1.0, train_flag: True})
+			_, batch_loss = sess.run([train_step, cross_entropy],
+			                         feed_dict={x: batch_x, y_: batch_y, keep_prob: dropout_rate,
+			                                    learning_rate: lr, train_flag: True})
+			batch_acc = accuracy.eval(feed_dict={x: batch_x, y_: batch_y, keep_prob: 1.0, train_flag: True})
 
-            train_loss += batch_loss
-            train_acc += batch_acc
-            pre_index += batch_size
+			train_loss += batch_loss
+			train_acc += batch_acc
+			pre_index += batch_size
 
-            if it == iterations:
-                train_loss /= iterations
-                train_acc /= iterations
+			print("train_acc: %f train_loss: %f" % batch_acc,batch_loss)
 
-                val_acc, val_loss = run_testing(sess,test_x,test_y,cross_entropy,accuracy)
+			if it == iterations:
+				train_loss /= iterations
+				train_acc /= iterations
+
+				val_acc, val_loss = run_testing(sess,test_x,test_y,cross_entropy,accuracy)
+
+				print("val_acc: %f val_loss: %f" % val_acc,val_loss)
 
 

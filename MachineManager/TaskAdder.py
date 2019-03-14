@@ -6,11 +6,13 @@ import os
 import time
 import json
 import ClusterAPI
+import cluster_settings
 
 
 def run_docker_proc(json_data):
 
-	connect_url = ["localhost:27017"]
+	# connect_url = ["localhost:27017"]
+	connect_url = cluster_settings.connect_url
 	cluster = ClusterAPI.Cluster(connect_url)
 
 	query = json_data['query']

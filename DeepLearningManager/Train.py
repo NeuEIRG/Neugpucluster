@@ -5,6 +5,7 @@ import time
 sys.path.append("../MachineManager")
 
 import ClusterAPI
+import cluster_settings
 
 class Task:
 	def __init__(self,name,machineList):
@@ -56,7 +57,7 @@ def set_Task_Param(cluster,json_data,task_name,ps_spec,worker_spec):
 
 	cluster.UpdateTaskParam(task_name,param)
 
-def set_Task_Param(cluster,json_data,task_name):
+def set_Task_Param(cluster,json_data,task_name,ps_spec,worker_spec,port):
 	batch_size = json_data['batch_size']
 	learning_rate = json_data['learning_rate']
 	network = json_data['network']
@@ -67,14 +68,19 @@ def set_Task_Param(cluster,json_data,task_name):
 	param['learning_rate'] = learning_rate
 	param['dataset_url'] = dataset_url
 	param['network'] = network
+	param['ps_spec'] = ps_spec
+	param['worker_spec'] = worker_spec
+	param['port'] = port
 
 	cluster.UpdateTaskParam(task_name,param)
 
 
 def Train(json_data):
-	connect_url = ["localhost:27017"]
+	# connect_url = ["localhost:27017"]
+	connect_url = cluster_settings.connect_url
 	cluster = ClusterAPI.Cluster(connect_url)
 	nodes = cluster.get_AviableMachines()
+	print(nodes)
 	if len(nodes)>1:
 		machineList = []
 		ps_machine = get_machine(nodes[0],"gpu",get_ps_job(0))
@@ -88,9 +94,7 @@ def Train(json_data):
 		task = ClusterAPI.Task(task_name,machineList)
 		ps_spec = [nodes[0]]
 		worker_spec = nodes[1:]
-		if len(worker_spec)==1:
-			worker_spec = [worker_spec]
-		set_Task_Param(cluster,json_data,task_name,ps_spec,worker_spec)
+		set_Task_Param(cluster,json_data,task_name,ps_spec,worker_spec,"2222")
 		cluster.AddTask(task)
 		error_list = cluster.AssignTask(task)
 	elif len(nodes)==1:

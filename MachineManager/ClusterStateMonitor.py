@@ -6,6 +6,7 @@ import os
 import time
 from threading import Lock
 import ClusterAPI
+import cluster_settings
 
 Java_Sock_Port = 8001
 JAVA_CMD = ['java','-cp','./example-zookeeper.jar','cn.itcast.zk.TestZKClient']
@@ -33,7 +34,8 @@ def run_java_sock_proc(DockerFileName,DockerBuildPath,Port):
 	server = socket.socket()
 	server.bind(('localhost',Java_Sock_Port))
 	server.listen(5)
-	connect_url = ["localhost:27017"]
+	# connect_url = ["localhost:27017"]
+	connect_url = cluster_settings.connect_url
 	cluster = ClusterAPI.Cluster(connect_url)
 	Me_Flag = False
 	Last_State = []

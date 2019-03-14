@@ -1,2 +1,2 @@
-docker: Error response from daemon: driver failed programming external connectivity on endpoint confident_aryabhata (f2b858850cf200e1b245eac57fe7a361343c042c0ede17e2255d4525065141ed): Bind for 0.0.0.0:8000 failed: port is already allocated.
-time="2019-03-12T21:06:14+08:00" level=error msg="error waiting for container: context canceled"
+docker: Error response from daemon: driver failed programming external connectivity on endpoint boring_kilby (689cea193687654090f8bc1722e04edecbb9472e1b96a69167bd613018263912): Bind for 0.0.0.0:8000 failed: port is already allocated.
+time="2019-03-13T00:54:54+08:00" level=error msg="error waiting for container: context canceled"
