@@ -5,7 +5,7 @@ import time
 import os
 import sys
 import random
-import pickle
+import cPickle as pickle
 import tempfile 
 
 sys.path.append("../MachineManager")
@@ -30,7 +30,7 @@ def data_preprocessing(x_train,x_test):
 
 def unpickle(file):
     with open(file, 'rb') as fo:
-        dict = pickle.load(fo,encoding='bytes')
+        dict = pickle.load(fo)
     return dict
 
 
@@ -305,7 +305,7 @@ if __name__ == '__main__':
 			train_acc += batch_acc
 			pre_index += batch_size
 
-			print("train_acc: %f train_loss: %f" % batch_acc,batch_loss)
+			print "train_acc: %f train_loss: %f" % (batch_acc,batch_loss)
 
 			if it == iterations:
 				train_loss /= iterations
@@ -313,6 +313,6 @@ if __name__ == '__main__':
 
 				val_acc, val_loss = run_testing(sess,test_x,test_y,cross_entropy,accuracy)
 
-				print("val_acc: %f val_loss: %f" % val_acc,val_loss)
+				print "val_acc: %f val_loss: %f" % (val_acc,val_loss)
 
 

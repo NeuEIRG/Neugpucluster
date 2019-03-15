@@ -112,6 +112,35 @@ class Cluster:
 		self.ClusterTable = "TestStateTable"
 		self.DataBase = "TestDlpDataBase"
 		self.TaskParamTable = "TestTaskParamTable"
+		self.LockTable = "TestLockTable"
+
+	def query_lock(self):
+		return self.clusterDataBase.query_all(self.LockTable,self.DataBase)
+
+	def insert_lock(self):
+		data = {}
+		data['locked'] = "yes"
+		self.clusterDataBase.insert_one(data,self.LockTable,self.DataBase)
+
+	def Parse_Lock_db_obj(self,lock_db):
+		ret = []
+		for l in lock_db:
+			ret.append(l)
+		if len(ret)==0:
+			return None
+		return ret
+
+	def get_lock(self):
+		lock_db = self.query_lock()
+		lock = self.Parse_Lock_db_obj(lock_db)
+		if lock==None:
+			self.insert_lock()
+			return True
+		else:
+			return False
+
+	def release_lock(self):
+		return self.clusterDataBase.delete_all(self.LockTable,self.DataBase)
 
 	def query_spec_task_param(self,spec):
 		return self.clusterDataBase.query_spec(spec,self.TaskParamTable,self.DataBase)
@@ -144,6 +173,9 @@ class Cluster:
 			data['task_name'] = task_name
 			data['param'] = param
 			self.insert_one_task_param(data)
+
+	def query_spec_task_param(self,spec):
+		return self.clusterDataBase.query_spec(spec,self.TaskParamTable,self.DataBase)
 
 
 	def getTaskParam(self,task_name):

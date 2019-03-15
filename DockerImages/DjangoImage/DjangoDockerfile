@@ -3,4 +3,5 @@ MAINTAINER Jelix
 COPY ./ManagerWebView ~/
 EXPOSE 8000
 RUN pip install simplejson
+RUN pip install zkpython
 CMD ["python","~/manage.py","runserver","0.0.0.0:8000"]
