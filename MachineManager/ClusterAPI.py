@@ -2,6 +2,7 @@ import DataBaseAPI
 import socket
 import json
 from copy import deepcopy
+import datetime
 
 # def run_task_monitor(cur_machines):
 # 	TaskError = {}
@@ -118,8 +119,10 @@ class Cluster:
 		return self.clusterDataBase.query_all(self.LockTable,self.DataBase)
 
 	def insert_lock(self):
-		data = {}
-		data['locked'] = "yes"
+		self.clusterDataBase.add_ttl_index("time",0,self.LockTable,self.DataBase)
+		data = {
+		   "time": datetime.datetime.utcnow(),
+		}
 		self.clusterDataBase.insert_one(data,self.LockTable,self.DataBase)
 
 	def Parse_Lock_db_obj(self,lock_db):
@@ -133,6 +136,7 @@ class Cluster:
 	def get_lock(self):
 		lock_db = self.query_lock()
 		lock = self.Parse_Lock_db_obj(lock_db)
+		print(lock)
 		if lock==None:
 			self.insert_lock()
 			return True
@@ -140,7 +144,8 @@ class Cluster:
 			return False
 
 	def release_lock(self):
-		return self.clusterDataBase.delete_all(self.LockTable,self.DataBase)
+		self.clusterDataBase.drop_all_indexes(self.LockTable,self.DataBase)
+		self.clusterDataBase.delete_all(self.LockTable,self.DataBase)
 
 	def query_spec_task_param(self,spec):
 		return self.clusterDataBase.query_spec(spec,self.TaskParamTable,self.DataBase)

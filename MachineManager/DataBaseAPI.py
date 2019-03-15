@@ -51,6 +51,18 @@ class ClusterDataBase:
 		table = self.get_Table(db,table_name) 
 		table.delete_many({})
 
+	def add_ttl_index(self,index,time_secs,table_name,db_name):
+		db = self.get_Database(db_name)
+		table = self.get_Table(db,table_name) 
+		# collection.create_index([(index, pymongo.ASCENDING)],expireAfterSeconds=time_secs)
+		table.create_index(index,expireAfterSeconds=time_secs)
+
+	def drop_all_indexes(self,table_name,db_name):
+		db = self.get_Database(db_name)
+		table = self.get_Table(db,table_name) 
+		# collection = self.client.db_name.table_name
+		table.drop_indexes()
+
 # connect_url = ["localhost:27017"]
 # ClusterDataBase = ClusterDataBase(connect_url)
 # data = {

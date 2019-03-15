@@ -17,7 +17,7 @@
 import json
 import sys
 import ClusterAPI
-
+import time
 
 # task_name = "testTask"
 # batch_size = 200
@@ -36,6 +36,9 @@ import ClusterAPI
 connect_url = ["localhost:27017"]
 cluster = ClusterAPI.Cluster(connect_url)
 # cluster.UpdateTaskParam(task_name,param)
-print(cluster.get_lock())
+
 cluster.release_lock()
+print(cluster.get_lock())
+print(cluster.get_lock())
+time.sleep(120)
 print(cluster.get_lock())
