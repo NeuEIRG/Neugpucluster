@@ -1,9 +1,0 @@
-FROM daocloud.io/daocloud/tensorflow:latest
-MAINTAINER Jelix
-COPY ./ ~/
-EXPOSE 27017
-WORKDIR ~/DeepLearningManager/
-RUN pip install ../pymongo-3.7.2-cp27-cp27mu-manylinux1_x86_64.whl
-ENTRYPOINT python ./distribute_worker.py $0 $@
-#CMD ["python","./distribute_worker.py"]
-#CMD ["ls","-l","~/"]

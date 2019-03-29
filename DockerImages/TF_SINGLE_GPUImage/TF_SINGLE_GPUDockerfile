@@ -1,8 +1,0 @@
-FROM daocloud.io/daocloud/tensorflow:latest
-MAINTAINER Jelix
-COPY ./ ~/
-EXPOSE 27017
-WORKDIR ~/DeepLearningManager/
-ENTRYPOINT python ./format_train.py $0 $@
-#CMD python ./format_train.py 
-#CMD ["ls","-l","~/"]

@@ -1,6 +1,0 @@
-FROM ubuntu:16.04
-MAINTAINER Jelix
-EXPOSE 8000
-COPY ./Web/ ~/
-RUN ["apt-get","install","python-django","-y"]
-CMD ["python3","~/ManagerWebView/manager.py","runserver","0.0.0.0:8000"]

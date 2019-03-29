@@ -1,8 +1,0 @@
-Traceback (most recent call last):
-  File "./format_train.py", line 218, in <module>
-    train_x, train_y, test_x, test_y = prepare_data()
-  File "./format_train.py", line 98, in prepare_data
-    meta = unpickle(data_dir + '/batches.meta')
-  File "./format_train.py", line 67, in unpickle
-    with open(file, 'rb') as fo:
-IOError: [Errno 2] No such file or directory: './cifar10-dataset/batches.meta'
